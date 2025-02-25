@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Price Regression</title>
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+    <script src="stock_data.js"></script>  <!-- Load JavaScript Stock Data -->
+</head>
+<body>
+    <h1>Stock Price Regression</h1>
+
+    <!-- Dropdowns -->
+    <label for="stockSelect">Select Stock:</label>
+    <select id="stockSelect"></select>
+
+    <label for="yearSelect">Select Year:</label>
+    <select id="yearSelect"></select>
+
+    <!-- Button to Show Graph -->
+    <button id="showGraphButton">Show Graph</button>
+
+    <!-- Graph Container -->
+    <div id="plot"></div>
+
+    <!-- Load External JavaScript -->
+    <script src="plot_graph.js"></script>
+</body>
+</html>
