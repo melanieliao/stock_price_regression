@@ -1,5 +1,6 @@
 // Load data from stock_data.js (already available as `stockData` and `stockList`)
 
+
 // Populate Dropdowns
 let stockSelect = document.getElementById("stockSelect");
 let yearSelect = document.getElementById("yearSelect");
@@ -23,7 +24,7 @@ document.getElementById("showGraphButton").addEventListener("click", updateGraph
 
 function updateGraph() {
     let stock = document.getElementById("stockSelect").value;
-    let year = document.getElementById("yearSelect").value;
+    let year = parseInt(document.getElementById("yearSelect").value, 10); // Ensure year is an integer
 
     if (!stock || !year) {
         alert("Please select a stock and year!");
@@ -37,8 +38,19 @@ function updateGraph() {
         return;
     }
 
-    let dates = dataPoints.map(d => new Date(d.Date));
-    let prices = dataPoints.map(d => d.Close);
+    // Convert Dates and Filter Out Next Year (January)
+    let filteredData = dataPoints.filter(d => {
+        let date = new Date(d.Date);
+        return date.getFullYear() === year; // Keep only dates within the selected year
+    });
+
+    if (filteredData.length === 0) {
+        alert(`No valid data found for ${stock} in ${year} (after filtering).`);
+        return;
+    }
+
+    let dates = filteredData.map(d => new Date(d.Date));
+    let prices = filteredData.map(d => d.Close);
 
     // Convert Dates to Numeric X Values
     let xValues = Array.from({length: prices.length}, (_, i) => i);
@@ -55,13 +67,14 @@ function updateGraph() {
     let intercept = (sumY - slope * sumX) / n;
     let regressionLine = xValues.map(x => slope * x + intercept);
 
-    // Plot Graph with Close Prices Only
+    // Plot Graph with Close Prices Only (Add $ Sign in Hover)
     let trace1 = {
         x: dates,
         y: prices,
         mode: 'markers',
         name: 'Close Prices',
-        marker: { color: 'blue' }
+        marker: { color: 'blue' },
+        hovertemplate: `<b>Date:</b> %{x}<br><b>Close Price:</b> $%{y:.2f}<extra></extra>` // Add $ sign
     };
 
     let trace2 = {
@@ -69,14 +82,15 @@ function updateGraph() {
         y: regressionLine,
         mode: 'lines',
         name: 'Regression Line',
-        line: { color: 'red' }
+        line: { color: 'red' },
+        hovertemplate: `<b>Date:</b> %{x}<br><b>Trend Price:</b> $%{y:.2f}<extra></extra>` // Add $ sign
     };
 
     let layout = {
         title: `${stock} Stock Close Prices (${year})`,
         xaxis: { title: "Date" },
         yaxis: { title: "Stock Price (USD)" },
-        hovermode: 'x unified'
+        hovermode: 'x unified' // Ensures unified hover over x-axis
     };
 
     Plotly.newPlot("plot", [trace1, trace2], layout);
